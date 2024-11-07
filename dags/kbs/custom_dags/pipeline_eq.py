@@ -161,8 +161,19 @@ def equipement_process():
                 if obj not in offset_lst:
                     try:
                         data = extract_pdf_data(MINIO_CLIENT, file_path, obj)
+                        REDIS_CLIENT_1.json().set(key, path.Path.root_path(), data)
+                        logging.info("end to push into redis")
+                        offset_lst.append(obj)
+                        save_files_minio(
+                            MINIO_CLIENT,
+                            offset_lst,
+                            f"pdf-offset-{index}.txt",
+                            bucket,
+                        )
                     except Exception as e:
                         err = {"file": obj, "exception": e}
+                        logging.exception(str(e))
+                        logging.error(obj)
                         save_files_minio(MINIO_CLIENT, err, "pdf_err/{obj}")
                         continue
 
@@ -179,16 +190,6 @@ def equipement_process():
                         #         )
                         #     print(f"SCHEMA -- SUCCESS -- Processed: {schema_filename}")
 
-                        REDIS_CLIENT_1.json().set(key, path.Path.root_path(), data)
-                        logging.info("end to push into redis")
-                        offset_lst.append(obj)
-                        save_files_minio(
-                            MINIO_CLIENT,
-                            offset_lst,
-                            f"pdf-offset-{index}.txt",
-                            bucket,
-                        )
-
             elif obj.endswith((".xls", ".xlsx")):
                 index = file.split(".")[0].split("_")[-1]
 
@@ -201,17 +202,21 @@ def equipement_process():
                 if obj not in offset_lst:
                     try:
                         data = extract_excel_data(MINIO_CLIENT, file_path, obj)
+                        REDIS_CLIENT_1.json().set(key, path.Path.root_path(), data)
+                        logging.info("end to push into redis")
+                        offset_lst.append(obj)
+                        save_files_minio(
+                            MINIO_CLIENT,
+                            offset_lst,
+                            f"excel-offset-{index}.txt",
+                            bucket,
+                        )
                     except Exception as e:
                         err = {"file": obj, "exception": e}
+                        logging.exception(str(e))
+                        logging.error(obj)
                         save_files_minio(MINIO_CLIENT, err, "excel_err/{obj}")
                         continue
-
-                REDIS_CLIENT_1.json().set(key, path.Path.root_path(), data)
-                logging.info("end to push into redis")
-                offset_lst.append(obj)
-                save_files_minio(
-                    MINIO_CLIENT, offset_lst, f"excel-offset-{index}.txt", bucket
-                )
 
             elif obj.endswith((".doc", ".docx")):
                 index = file.split(".")[0].split("_")[-1]
@@ -225,16 +230,18 @@ def equipement_process():
                 if obj not in offset_lst:
                     try:
                         data = extract_word_data(MINIO_CLIENT, file_path, obj)
-                    except:
+                        REDIS_CLIENT_1.json().set(key, path.Path.root_path(), data)
+                        logging.info("end to push into redis")
+                        offset_lst.append(obj)
+                        save_files_minio(
+                            MINIO_CLIENT, offset_lst, f"doc-offset-{index}.txt", bucket
+                        )
+                    except Exception as e:
                         err = {"file": obj, "exception": e}
+                        logging.exception(str(e))
+                        logging.error(obj)
                         save_files_minio(MINIO_CLIENT, err, "doc_err/{obj}")
                         continue
-                REDIS_CLIENT_1.json().set(key, path.Path.root_path(), data)
-                logging.info("end to push into redis")
-                offset_lst.append(obj)
-                save_files_minio(
-                    MINIO_CLIENT, offset_lst, f"doc-offset-{index}.txt", bucket
-                )
 
             else:
                 # raise ValueError("file extension not autorized")
