@@ -1,0 +1,18 @@
+dependencies:
+- name: airflow
+  repository: https://airflow.apache.org
+  version: 1.14.0
+- name: minio
+  repository: https://charts.min.io/
+  version: 5.2.0
+- name: redis-stack-server
+  repository: https://redis-stack.github.io/helm-redis-stack/
+  version: 0.4.12
+- name: neo4j
+  repository: https://helm.neo4j.com/neo4j
+  version: 5.21.0
+- name: mongodb
+  repository: https://charts.bitnami.com/bitnami
+  version: 15.6.14
+digest: sha256:f14f0ec6e63011547496e14565ee2947eae596a7c489a7b579191892fded4a05
+generated: "2024-07-18T12:54:33.1345Z"
